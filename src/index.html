@@ -2,12 +2,293 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>CluadeSelfservice</title>
+  <title>Low-Code Platform</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Modern low-code platform for building applications with dynamic service flows">
+  <meta name="keywords" content="low-code, platform, forms, workflows, applications">
+  <meta name="author" content="Low-Code Platform Team">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Preconnect to Google Fonts for performance -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Material Design Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Roboto Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Progressive Web App manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Theme color for mobile browsers -->
+  <meta name="theme-color" content="#2196f3">
+
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+  <!-- Microsoft Tile -->
+  <meta name="msapplication-TileColor" content="#2196f3">
+  <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+
+  <!-- Open Graph meta tags for social sharing -->
+  <meta property="og:title" content="Low-Code Platform">
+  <meta property="og:description" content="Modern low-code platform for building applications with dynamic service flows">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icons/icon-512x512.png">
+
+  <!-- Twitter Card meta tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Low-Code Platform">
+  <meta name="twitter:description" content="Modern low-code platform for building applications with dynamic service flows">
+  <meta name="twitter:image" content="icons/icon-512x512.png">
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" as="style">
+
+  <!-- Critical CSS for loading state -->
+  <style>
+    /* Critical loading styles */
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: #fafafa;
+      overflow-x: hidden;
+    }
+
+    /* App loading spinner */
+    .app-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .app-loading.loaded {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      text-align: center;
+      color: white;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+
+    .loading-text {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .loading-subtitle {
+      font-size: 14px;
+      margin: 8px 0 0 0;
+      opacity: 0.7;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Hide loading when app is ready */
+    app-root:not(:empty) + .app-loading {
+      display: none;
+    }
+
+    /* Error fallback styles */
+    .app-error {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #333;
+      font-family: 'Roboto', Arial, sans-serif;
+      max-width: 400px;
+      padding: 20px;
+    }
+
+    .error-icon {
+      font-size: 48px;
+      color: #f44336;
+      margin-bottom: 16px;
+    }
+
+    .error-title {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      color: #333;
+    }
+
+    .error-message {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .error-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .error-button.primary {
+      background: #2196f3;
+      color: white;
+    }
+
+    .error-button.primary:hover {
+      background: #1976d2;
+    }
+
+    .error-button.secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .error-button.secondary:hover {
+      background: #e0e0e0;
+    }
+  </style>
 </head>
-<body>
-  <app-root></app-root>
+<body class="mat-typography">
+<!-- Main Application -->
+<app-root></app-root>
+
+<!-- Loading Screen -->
+<div class="app-loading" id="app-loading">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <h2 class="loading-text">Low-Code Platform</h2>
+    <p class="loading-subtitle">Loading your workspace...</p>
+  </div>
+</div>
+
+<!-- Error Fallback (shown if JavaScript fails) -->
+<noscript>
+  <div class="app-error">
+    <div class="error-icon">⚠️</div>
+    <h2 class="error-title">JavaScript Required</h2>
+    <p class="error-message">
+      This application requires JavaScript to run properly.
+      Please enable JavaScript in your browser and refresh the page.
+    </p>
+    <div class="error-actions">
+      <button class="error-button primary" onclick="window.location.reload()">
+        Refresh Page
+      </button>
+    </div>
+  </div>
+</noscript>
+
+<!-- JavaScript to hide loading screen when app is ready -->
+<script>
+  // Hide loading screen when the app component is loaded
+  function hideLoadingScreen() {
+    const loadingElement = document.getElementById('app-loading');
+    const appRoot = document.querySelector('app-root');
+
+    if (loadingElement && appRoot && appRoot.children.length > 0) {
+      loadingElement.classList.add('loaded');
+      setTimeout(() => {
+        loadingElement.style.display = 'none';
+      }, 500);
+    }
+  }
+
+  // Check periodically if app is loaded
+  const checkAppLoaded = setInterval(() => {
+    const appRoot = document.querySelector('app-root');
+    if (appRoot && appRoot.children.length > 0) {
+      hideLoadingScreen();
+      clearInterval(checkAppLoaded);
+    }
+  }, 100);
+
+  // Fallback: hide loading screen after 10 seconds
+  setTimeout(() => {
+    hideLoadingScreen();
+    clearInterval(checkAppLoaded);
+  }, 10000);
+
+  // Show error if app fails to load after 15 seconds
+  setTimeout(() => {
+    const appRoot = document.querySelector('app-root');
+    const loadingElement = document.getElementById('app-loading');
+
+    if (appRoot && appRoot.children.length === 0 && loadingElement) {
+      loadingElement.innerHTML = `
+          <div class="app-error">
+            <div class="error-icon">❌</div>
+            <h2 class="error-title">Loading Failed</h2>
+            <p class="error-message">
+              The application failed to load. This might be due to a network issue or server problem.
+            </p>
+            <div class="error-actions">
+              <button class="error-button primary" onclick="window.location.reload()">
+                Retry
+              </button>
+              <button class="error-button secondary" onclick="window.location.href='/'">
+                Go Home
+              </button>
+            </div>
+          </div>
+        `;
+    }
+  }, 15000);
+
+  // Performance monitoring
+  window.addEventListener('load', () => {
+    // Log performance metrics
+    if ('performance' in window) {
+      const perfData = performance.getEntriesByType('navigation')[0];
+      console.log('App loaded in:', Math.round(perfData.loadEventEnd - perfData.startTime), 'ms');
+    }
+  });
+
+  // Error handling
+  window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    // Could send error to monitoring service here
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    // Could send error to monitoring service here
+  });
+</script>
 </body>
 </html>
