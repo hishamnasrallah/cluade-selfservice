@@ -1,4 +1,4 @@
-// src/app/services/api.service.ts
+// src/app/services/api.service.ts (renamed from appi.service.ts)
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';

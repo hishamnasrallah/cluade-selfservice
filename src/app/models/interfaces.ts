@@ -1,4 +1,4 @@
-// src/app/models/interfaces.ts
+// src/app/models/interfaces.ts (renamed from intefaces.ts)
 
 // Authentication models
 export interface LoginRequest {

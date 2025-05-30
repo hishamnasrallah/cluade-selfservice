@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ApiService } from '../../services/api.service';
 import { Application, ApplicationsResponse, ApplicationStatus } from '../../models/interfaces';
+import {ApplicationsListComponent} from '../applications-list/applications-list.component';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,8 @@ import { Application, ApplicationsResponse, ApplicationStatus } from '../../mode
     MatBadgeModule,
     MatChipsModule,
     MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ApplicationsListComponent
   ],
   template: `
     <div class="home-container">

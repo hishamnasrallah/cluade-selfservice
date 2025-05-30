@@ -206,8 +206,8 @@ import { Service, ServicesResponse } from '../../models/interfaces';
         </h3>
         <p class="empty-subtitle">
           {{ searchQuery
-            ? 'Try adjusting your search terms or clear the search to see all services.'
-            : 'There are currently no services available. Please contact your administrator.' }}
+          ? 'Try adjusting your search terms or clear the search to see all services.'
+          : 'There are currently no services available. Please contact your administrator.' }}
         </p>
         <button mat-raised-button
                 color="primary"
