@@ -181,9 +181,9 @@ import {
                             <input matInput
                                    [formControlName]="field.name"
                                    [placeholder]="field.display_name"
-                                   [maxlength]="field.max_length"
-                                   [minlength]="field.min_length"
-                                   [pattern]="field.regex_pattern">
+                                   [maxlength]="getMaxLength(field)"
+                                   [minlength]="getMinLength(field)">
+<!--                                   [pattern]="getPattern(field)">-->
                             <mat-hint *ngIf="field.max_length">
                               {{ getStepForm(i).get(field.name)?.value?.length || 0 }}/{{ field.max_length }}
                             </mat-hint>
@@ -205,17 +205,17 @@ import {
                                    type="number"
                                    [formControlName]="field.name"
                                    [placeholder]="field.display_name"
-                                   [min]="field.value_greater_than"
-                                   [max]="field.value_less_than"
+                                   [min]="getMinValue(field)"
+                                   [max]="getMaxValue(field)"
                                    [step]="field.integer_only ? 1 : 0.01">
                             <mat-error *ngIf="getStepForm(i).get(field.name)?.hasError('required')">
                               {{ field.display_name }} is required
                             </mat-error>
                             <mat-error *ngIf="getStepForm(i).get(field.name)?.hasError('min')">
-                              Value must be greater than {{ field.value_greater_than }}
+                              Value must be greater than {{ getMinValue(field) }}
                             </mat-error>
                             <mat-error *ngIf="getStepForm(i).get(field.name)?.hasError('max')">
-                              Value must be less than {{ field.value_less_than }}
+                              Value must be less than {{ getMaxValue(field) }}
                             </mat-error>
                           </mat-form-field>
 
@@ -234,7 +234,7 @@ import {
                             class="form-field">
                             <mat-label>{{ field.display_name }}</mat-label>
                             <mat-select [formControlName]="field.name"
-                                       [multiple]="isMultipleChoice(field)">
+                                        [multiple]="isMultipleChoice(field)">
                               <mat-option
                                 *ngFor="let option of getFieldOptions(field)"
                                 [value]="option.id">
@@ -353,6 +353,7 @@ import {
     </div>
   `,
   styles: [`
+    /* Previous styles remain the same */
     .service-flow-container {
       min-height: 100vh;
       background: #f5f7fa;
@@ -843,7 +844,7 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
           validators.push(Validators.min(field.value_greater_than + 0.01));
         }
 
-        if (field.value_less_than !== undefined) {
+        if (field.value_less_than !== undefined && field.value_less_than !== null) {
           validators.push(Validators.max(field.value_less_than - 0.01));
         }
 
@@ -889,6 +890,27 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
         this.lookupOptions[fieldName] = [];
       }
     });
+  }
+
+  // Type-safe helper methods for template
+  getMaxLength(field: ServiceFlowField): number | null {
+    return field.max_length ?? null;
+  }
+
+  getMinLength(field: ServiceFlowField): number | null {
+    return field.min_length ?? null;
+  }
+
+  getPattern(field: ServiceFlowField): string | null {
+    return field.regex_pattern ?? null;
+  }
+
+  getMinValue(field: ServiceFlowField): number | null {
+    return field.value_greater_than ?? null;
+  }
+
+  getMaxValue(field: ServiceFlowField): number | null {
+    return field.value_less_than ?? null;
   }
 
   // Utility methods

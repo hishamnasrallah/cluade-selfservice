@@ -45,7 +45,7 @@ export class FormValidationService {
       if (field.value_greater_than !== undefined) {
         validators.push(this.minValueValidator(field.value_greater_than));
       }
-      if (field.value_less_than !== undefined) {
+      if (field.value_less_than !== undefined && field.value_less_than !== null) {
         validators.push(this.maxValueValidator(field.value_less_than));
       }
       if (field.integer_only) {
@@ -54,7 +54,7 @@ export class FormValidationService {
       if (field.positive_only) {
         validators.push(this.positiveNumberValidator());
       }
-      if (field.precision !== undefined) {
+      if (field.precision !== undefined && field.precision !== null) {
         validators.push(this.precisionValidator(field.precision));
       }
     }
@@ -385,7 +385,7 @@ export class FormValidationService {
     };
   }
 
-  private imageDimensionsValidator(maxWidth?: number, maxHeight?: number): ValidatorFn {
+  private imageDimensionsValidator(maxWidth?: number | null, maxHeight?: number | null): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (control.value instanceof File && control.value.type.startsWith('image/')) {
         return new Promise((resolve) => {
@@ -424,7 +424,7 @@ export class FormValidationService {
       return Math.floor(num);
     }
 
-    if (field.precision !== undefined) {
+    if (field.precision !== undefined && field.precision !== null) {
       return Number(num.toFixed(field.precision));
     }
 
@@ -520,7 +520,7 @@ export class FormValidationService {
           if (field.value_greater_than !== undefined && num <= field.value_greater_than) {
             errors.push(`${fieldName} must be greater than ${field.value_greater_than}`);
           }
-          if (field.value_less_than !== undefined && num >= field.value_less_than) {
+          if (field.value_less_than !== undefined && field.value_less_than !== null && num >= field.value_less_than) {
             errors.push(`${fieldName} must be less than ${field.value_less_than}`);
           }
           if (field.integer_only && !Number.isInteger(num)) {

@@ -419,7 +419,7 @@ export class ConfigComponent implements OnInit {
 
   exampleUrls = [
     'https://api.example.com',
-    'https://localhost:8000',
+    'http://localhost:8000',
     'http://192.168.1.100:8080'
   ];
 
