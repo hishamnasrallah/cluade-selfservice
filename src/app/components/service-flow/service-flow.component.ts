@@ -67,7 +67,7 @@ import {
           </button>
           <div class="header-info">
             <h1 class="flow-title">{{ currentStep?.name || 'Service Application' }}</h1>
-            <p class="flow-subtitle" *ngIf="serviceId">Service ID: {{ serviceId }}</p>
+            <p class="flow-subtitle" *ngIf="serviceCode">Service: {{ serviceCode }} (ID: {{ serviceId }})</p>
           </div>
         </div>
 
@@ -88,6 +88,7 @@ import {
       <div class="loading-container" *ngIf="isLoading">
         <mat-spinner diameter="60"></mat-spinner>
         <p class="loading-text">Loading service flow...</p>
+        <p class="loading-subtitle">Service: {{ serviceCode }} (ID: {{ serviceId }})</p>
       </div>
 
       <!-- Error State -->
@@ -98,6 +99,10 @@ import {
             <div class="error-details">
               <h3>Unable to Load Service Flow</h3>
               <p>{{ error }}</p>
+              <div class="error-info">
+                <strong>Service Code:</strong> {{ serviceCode }}<br>
+                <strong>Service ID:</strong> {{ serviceId }}
+              </div>
               <div class="error-actions">
                 <button mat-raised-button color="primary" (click)="loadServiceFlow()">
                   <mat-icon>refresh</mat-icon>
@@ -353,7 +358,7 @@ import {
     </div>
   `,
   styles: [`
-    /* Previous styles remain the same */
+    /* Previous styles remain the same - just showing key changes */
     .service-flow-container {
       min-height: 100vh;
       background: #f5f7fa;
@@ -439,6 +444,13 @@ import {
       margin: 0;
     }
 
+    .loading-subtitle {
+      color: #9e9e9e;
+      font-size: 14px;
+      margin: 0;
+      font-style: italic;
+    }
+
     .error-card {
       margin: 40px auto;
       max-width: 600px;
@@ -467,11 +479,20 @@ import {
       color: #7f8c8d;
     }
 
+    .error-info {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 4px solid #3498db;
+    }
+
     .error-actions {
       display: flex;
       gap: 12px;
     }
 
+    /* All other styles remain the same... */
     .wizard-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -734,7 +755,9 @@ import {
   `]
 })
 export class ServiceFlowComponent implements OnInit, OnDestroy {
-  serviceId: string = '';
+  // 🔧 Now tracking both service code and service ID
+  serviceCode: string = '';
+  serviceId: number = 0;
   serviceFlowSteps: ServiceFlowStep[] = [];
   stepForms: FormGroup[] = [];
   lookupOptions: { [key: string]: any[] } = {};
@@ -765,8 +788,12 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      this.serviceId = params['serviceId'];
-      if (this.serviceId) {
+      // 🔧 Extract both service code and service ID from route parameters
+      this.serviceCode = params['serviceCode'];
+      this.serviceId = parseInt(params['serviceId']);
+
+      if (this.serviceCode && this.serviceId) {
+        console.log('🔄 Loading service flow for service code:', this.serviceCode, 'ID:', this.serviceId);
         this.loadServiceFlow();
       }
     });
@@ -781,15 +808,16 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.apiService.getServiceFlow(this.serviceId).subscribe({
+    // 🔧 KEY CHANGE: Pass the service code to the API service
+    this.apiService.getServiceFlow(this.serviceCode).subscribe({
       next: (response: ServiceFlowResponse) => {
         this.serviceFlowSteps = response.service_flow || [];
         this.initializeWizard();
         this.isLoading = false;
-        console.log('✅ Service flow loaded:', this.serviceFlowSteps);
+        console.log('✅ Service flow loaded for code:', this.serviceCode, 'ID:', this.serviceId, this.serviceFlowSteps);
       },
       error: (error) => {
-        console.error('❌ Error loading service flow:', error);
+        console.error('❌ Error loading service flow for code:', this.serviceCode, 'ID:', this.serviceId, error);
         this.error = error.message || 'Failed to load service flow';
         this.isLoading = false;
       }
@@ -1037,7 +1065,7 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
   // Form submission methods
   saveDraft(): void {
     this.collectFormData();
-    console.log('Saving draft...', this.wizardState.formData);
+    console.log('Saving draft for service code:', this.serviceCode, 'ID:', this.serviceId, this.wizardState.formData);
     this.snackBar.open('Draft saved successfully', 'Close', { duration: 3000 });
   }
 
@@ -1047,7 +1075,7 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
 
     const caseData: CaseSubmission = {
       applicant_type: 13, // This should come from the form or be configured
-      case_type: parseInt(this.serviceId),
+      case_type: this.serviceId, // 🔧 KEY FIX: Use the numeric service ID for case_type
       case_data: this.wizardState.formData,
       file_types: this.getFileTypes()
     };
@@ -1058,15 +1086,18 @@ export class ServiceFlowComponent implements OnInit, OnDestroy {
       caseData.case_data[fieldName] = this.fileSelections[key];
     });
 
+    console.log('📤 Submitting application for service code:', this.serviceCode, 'ID:', this.serviceId, caseData);
+
     this.apiService.submitCase(caseData).subscribe({
       next: (response) => {
         this.isSubmitting = false;
         this.snackBar.open('Application submitted successfully!', 'Close', { duration: 5000 });
+        console.log('✅ Application submitted successfully:', response);
         this.router.navigate(['/home']);
       },
       error: (error) => {
         this.isSubmitting = false;
-        console.error('Error submitting application:', error);
+        console.error('❌ Error submitting application:', error);
         this.snackBar.open('Failed to submit application. Please try again.', 'Close', { duration: 5000 });
       }
     });

@@ -1,4 +1,4 @@
-// src/app/services/api.service.ts (renamed from appi.service.ts)
+// src/app/services/api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -43,16 +43,24 @@ export class ApiService {
   }
 
   /**
-   * Get service flow for a specific service
+   * Get service flow for a specific service using service CODE (not ID)
+   * @param serviceCode - The service code (e.g., "01", "03", "05")
    */
-  getServiceFlow(serviceId: string): Observable<ServiceFlowResponse> {
+  getServiceFlow(serviceCode: string): Observable<ServiceFlowResponse> {
     const url = this.buildUrl('/dynamic/service_flow/');
-    const params = new HttpParams().set('service', serviceId);
+
+    // Format the service code as an array in the URL parameter
+    // The API expects: ?service=["01"] format
+    const serviceParam = `["${serviceCode}"]`;
+    const params = new HttpParams().set('service', serviceParam);
+
+    console.log('🔄 Calling service flow API with URL:', `${url}?service=${serviceParam}`);
 
     return this.http.get<ServiceFlowResponse>(url, { params })
       .pipe(
         retry(2),
         map(response => {
+          console.log('✅ Service flow API response:', response);
           // Sort service flow steps by sequence_number
           if (response.service_flow) {
             response.service_flow.sort((a, b) =>
@@ -113,6 +121,7 @@ export class ApiService {
 
   /**
    * Submit a new case/application
+   * @param caseData - Case submission data
    */
   submitCase(caseData: CaseSubmission): Observable<any> {
     const url = this.buildUrl('/case/cases/');

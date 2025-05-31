@@ -28,7 +28,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'service-flow/:serviceId',
+    // 🔧 Updated route to accept both service CODE and service ID
+    // :serviceCode - for the service flow API (e.g., "01", "03", "05")
+    // :serviceId - for case submission (numeric ID like 9, 46, 51)
+    path: 'service-flow/:serviceCode/:serviceId',
     component: ServiceFlowComponent,
     canActivate: [AuthGuard]
   },

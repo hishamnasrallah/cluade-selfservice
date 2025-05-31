@@ -155,6 +155,11 @@ import { Service, ServicesResponse } from '../../models/interfaces';
               </div>
 
               <div class="detail-item">
+                <mat-icon class="detail-icon">fingerprint</mat-icon>
+                <span class="detail-text">ID: {{ service.id }}</span>
+              </div>
+
+              <div class="detail-item">
                 <mat-icon class="detail-icon">category</mat-icon>
                 <span class="detail-text">Type: {{ service.type }}</span>
               </div>
@@ -787,8 +792,10 @@ export class ServicesComponent implements OnInit {
     }
 
     console.log('Starting service:', service);
-    // Navigate to service flow with service ID
-    this.router.navigate(['/service-flow', service.id]);
+
+    // 🔧 Navigate with both service CODE and ID
+    // Code is needed for the service flow API, ID is needed for case submission
+    this.router.navigate(['/service-flow', service.code, service.id]);
   }
 
   onImageError(event: any): void {
